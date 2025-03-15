@@ -17,3 +17,17 @@ int remove_duplicates(std::vector<int>& arr) {
 	return arr.size();
 }
 
+
+int remove_duplicates_weird(std::vector<int>& arr) {
+	int slow = 0;
+
+	for (int fast = 1; fast < arr.size(); ++fast) {
+		if (arr.at(fast) != arr.at(fast - 1)) {
+			++slow;
+			arr.at(slow) = arr.at(fast);
+		} 
+	}
+
+	return slow + 1;
+}
+
