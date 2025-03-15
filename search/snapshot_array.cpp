@@ -30,10 +30,13 @@ void SnapshotArray::set(int index, int val) {
 }
 
 int SnapshotArray::snap() {
-	return snap_count++; 
+	return snap_count++;+ 
 }
 
 int SnapshotArray::get(int index, int snap_id) {
+	if (snap_id >= histories.at(index).size()) {
+		return histories.at(index).at(histories.at(index).size() - 1);
+	}
 	return histories.at(index).at(snap_id);
 }
 
@@ -53,9 +56,13 @@ void SnapshotArray::debug() {
 int main() {
 	SnapshotArray arr = SnapshotArray(3);
 	arr.set(0, 5);
-	arr.snap();
+	int id0 = arr.snap();
 	arr.set(0, 6);
-	std::cout << arr.get(0, 0) << std::endl;
+	int id1 = arr.snap();
+	std::cout << "id0: " << id0 << " | id1: " << id1 << std::endl;
+	std::cout << arr.get(0, id0) << std::endl;
+	std::cout << arr.get(0, id1) << std::endl;
+	std::cout << arr.get(2, id1) << std::endl;
 	arr.debug();
 }
 
