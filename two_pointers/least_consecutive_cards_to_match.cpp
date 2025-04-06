@@ -5,19 +5,15 @@
 
 int least_consecutive_cards_to_match(std::vector<int>& cards) {
 	int follower {0}, result = cards.size() + 1;
-	std::unordered_map<int, std::pair<int, int>> window;
+	std::unordered_map<int, int> window;
 
 	for (int leader = 0; leader < cards.size(); leader++) {
-		window[cards[leader]].second += 1;
-		if (window[cards[leader]].second > 1) {
-			result = std::min(result, leader - window[cards[leader]].first + 1);
-
-			while (follower < window[cards[leader]].first) {
-				window[cards[follower]].second -= 1;
-				follower++;
-			}
+		window[cards[leader]] += 1;
+		while (window[cards[leader]] > 1) {
+			result = std::min(result, leader - follower + 1);
+			window[cards[follower]] -= 1;
+			follower++;
 		}
-		window[cards[leader]].first = leader;
 	}
 	
 	if (result > cards.size()) { result = -1; }
