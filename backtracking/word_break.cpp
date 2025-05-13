@@ -2,11 +2,11 @@
 #include <string>
 
 
-bool dfs(int start, std::string& s, std::vector<int>& memo, std::vector<std::string>& words) {
+bool dfs(int start, const std::string& s, std::vector<int>& memo, std::vector<std::string>& words) {
 	if (start == s.size()) return true;
 	if (memo[start] != -1) return memo[start] == 1;
 
-	bool ans = 0;
+	int ans = 0;
 	for (std::string& word : words) {
 		if (s.substr(start).find(word) == 0) {
 			if (dfs(start + word.size(), s, memo, words)) {
