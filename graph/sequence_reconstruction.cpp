@@ -1,8 +1,7 @@
-#include <exception>
 #include <iostream>
-#include <ostream>
 #include <vector>
-#include <string>
+#include <ostream>
+#include <exception>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
@@ -13,7 +12,16 @@ typedef std::vector<Node> Collection;
 
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& vec) {
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set) {
+    for (const auto& elem : set) {
+        os << elem << " ";
+    }
+    return os;
+}
+
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
     for (const auto& elem : vec) {
         os << elem << " ";
     }
@@ -41,6 +49,7 @@ struct CollectionHash {
         return seed;
     }
 };
+
 
 struct CollectionEqual {
     bool operator()(const Collection& a, const Collection& b) const noexcept {
@@ -85,10 +94,27 @@ std::unordered_map<Node, int> find_indegree(Graph& graph) {
 bool sequence_reconstruction(std::vector<int>& original, std::vector<std::vector<int>>& seqs) {
     try {
         Graph graph = build_graph(original, seqs);
-        std::cout << graph << std::endl;
+        std::unordered_map<Node, int> indegree = find_indegree(graph);
 
-        std::unordered_map<Node, int> indgree = find_indegree(graph);
-        std::cout << indgree << std::endl;
+        std::queue<Node> q;
+        for (const auto& node : indegree) {
+            if (node.second == 0) q.push(node.first);
+        }
+
+        Collection result;
+
+        while (!q.empty()) {
+            if (q.size() > 1) return false;
+
+            Node curr = q.front();
+            for (const auto& neighbor : graph[curr]) {
+                if (--indegree[neighbor] == 0) q.push(neighbor);
+            }
+            result.emplace_back(curr);
+            q.pop();
+        }
+        return (result == original);
+
     } catch (std::exception& e) {
     }
     return false;
@@ -98,8 +124,11 @@ bool sequence_reconstruction(std::vector<int>& original, std::vector<std::vector
 int main() {
     // std::vector<int> original {4, 1, 5, 2, 6, 3};
     // std::vector<std::vector<int>> seqs {{5, 2, 6, 3}, {4, 1, 5, 2}};
-    std::vector<int> original {1, 2, 3};
-    std::vector<std::vector<int>> seqs {{1, 2}, {1, 3}, {2, 3}};
+    // std::vector<int> original {1, 2, 3};
+    // std::vector<std::vector<int>> seqs {{1, 2}, {1, 3}, {2, 3}};
+    std::vector<int> original {1, 3, 2};
+    std::vector<std::vector<int>> seqs {{1, 2}, {1, 3}};
     bool result = sequence_reconstruction(original, seqs);
+    std::cout << "Result: " << std::boolalpha << result << std::endl;
 }
 
